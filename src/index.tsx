@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-const Users = React.lazy(() => import('./page/users.page'));
+const Users = React.lazy(() => import('./pages/users.page'));
 const router = createBrowserRouter([
   {
     path: "/",
