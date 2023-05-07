@@ -28,10 +28,10 @@ function Users(): JSX.Element {
 
   const getUsers = async () => {
     try {
-      const response = await JsonPlaceholderClient.get('/users')
+      const response = await JsonPlaceholderClient.get('/users');
       setState((prev) => ({
         ...prev,
-        users: response.data,
+        users: response.data.sort((a: IUser, b: IUser) => a.name.localeCompare(b.name)),
         isFetchingUsers: false,
       }))
     } catch (error) {
