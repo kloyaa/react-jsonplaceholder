@@ -1,0 +1,1 @@
+export { JsonPlaceholderClient } from "./axios.util";

@@ -1,11 +1,81 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
+import { JsonPlaceholderClient } from '../utils'
+import { IUser, TUserFavorite } from '../interfaces'
+import { Box, SimpleGrid, Spinner, Center, useToast } from '@chakra-ui/react'
+import { CardUser } from '../components/card.component'
+import { useNavigate, useNavigation } from 'react-router-dom'
+import { useLocalStorage } from '../utils/hooks.utils'
+import { DrawerUserFavorites } from '../components/drawer.component'
 
-function Users() {
-  return <>
-    <p>
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Recusandae nulla, saepe vero, quidem eos beatae laboriosam officia excepturi optio corrupti nemo, ex aperiam incidunt molestiae libero possimus omnis itaque pariatur veniam sunt odit? Fugit, cupiditate officiis! Nam eum consequuntur, ad perferendis maxime consectetur! Laboriosam non eum voluptates temporibus fuga rerum ducimus voluptas quia eligendi adipisci doloremque, tenetur fugiat veniam. Dignissimos quam, odio eaque inventore est fuga saepe excepturi, itaque alias provident quae officiis fugit maxime harum? Consequatur velit quo molestias, error aut, delectus ab ipsa mollitia itaque incidunt sit iste voluptatibus distinctio pariatur reprehenderit saepe. Non, accusantium, temporibus, dolorem nobis labore libero delectus eius asperiores illum tempore inventore sequi dolore quod quasi minus ratione provident esse doloribus quo nam. Repellat odit perferendis similique maiores repellendus dignissimos, illum ipsum excepturi optio a at expedita voluptates ea, nostrum, velit ullam ab quam inventore beatae. Porro dolorem exercitationem, voluptates minus qui dicta quae dolores. Itaque quis praesentium minima facilis et, iste nisi ratione aut cum minus sint corrupti facere, enim sapiente officia, reprehenderit ad pariatur quam delectus repellat eos vero modi neque voluptatibus. Minima, iure, quia facere saepe maiores sed numquam nam ab omnis deserunt officia explicabo, illo nemo corporis! Corporis, molestiae corrupti.
-    </p>
-  </>
+interface IState {
+  users: IUser[]
+  isFetchingUsers: boolean
+}
+
+/**
+ * @name Users
+ * @description List of users should display here
+ */
+function Users(): JSX.Element {
+  const [favorites, setFavorites] = useLocalStorage<TUserFavorite[]>('user-favorites', []);
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const toast = useToast();
+  const [state, setState] = useState<IState>({
+    users: [],
+    isFetchingUsers: true,
+  })
+
+  const getUsers = async () => {
+    try {
+      const response = await JsonPlaceholderClient.get('/users')
+      setState((prev) => ({
+        ...prev,
+        users: response.data,
+        isFetchingUsers: false,
+      }))
+    } catch (error) {
+      setState((prev) => ({
+        ...prev,
+        isFetchingUsers: false,
+      }))
+    }
+  }
+
+  const handleNavigate = (data: IUser) =>
+    navigate(`/${data.id}`, {
+      state: data,
+  });
+
+  useEffect(() => {
+    window.document.title = `${process.env.REACT_APP_TITLE} | Users`
+    getUsers()
+  }, [])
+
+  return (
+    <>
+      {state?.isFetchingUsers || navigation.state === "loading" ? (
+        <Center h='100vh'>
+          <Spinner size='xl' color={'purple.500'} />
+        </Center>
+      ) : <>
+        <DrawerUserFavorites favorites={favorites}/>
+        <Box p={'28'}>
+          <SimpleGrid minChildWidth={'250px'} spacing={'20px'}>
+            {state?.users.map((user: IUser) => {
+              return (
+                <CardUser
+                  clickEvent={() => handleNavigate(user)}
+                  data={user}
+                  key={user.id}
+                />
+              )
+            })}
+          </SimpleGrid>
+        </Box>
+      </>}
+    </>
+  )
 }
 
 export default Users
