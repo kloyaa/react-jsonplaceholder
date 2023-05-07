@@ -17,10 +17,12 @@ interface IState {
  * @description List of users should display here
  */
 function Users(): JSX.Element {
-  const [favorites, setFavorites] = useLocalStorage<TUserFavorite[]>('user-favorites', []);
-  const navigate = useNavigate();
-  const navigation = useNavigation();
-  const toast = useToast();
+  const [favorites, setFavorites] = useLocalStorage<TUserFavorite[]>(
+    'user-favorites',
+    []
+  )
+  const navigate = useNavigate()
+  const navigation = useNavigation()
   const [state, setState] = useState<IState>({
     users: [],
     isFetchingUsers: true,
@@ -28,10 +30,12 @@ function Users(): JSX.Element {
 
   const getUsers = async () => {
     try {
-      const response = await JsonPlaceholderClient.get('/users');
+      const response = await JsonPlaceholderClient.get('/users')
       setState((prev) => ({
         ...prev,
-        users: response.data.sort((a: IUser, b: IUser) => a.name.localeCompare(b.name)),
+        users: response.data.sort((a: IUser, b: IUser) =>
+          a.name.localeCompare(b.name)
+        ),
         isFetchingUsers: false,
       }))
     } catch (error) {
@@ -45,7 +49,7 @@ function Users(): JSX.Element {
   const handleNavigate = (data: IUser) =>
     navigate(`/${data.id}`, {
       state: data,
-  });
+    })
 
   useEffect(() => {
     window.document.title = `${process.env.REACT_APP_TITLE} | Users`
@@ -54,26 +58,28 @@ function Users(): JSX.Element {
 
   return (
     <>
-      {state?.isFetchingUsers || navigation.state === "loading" ? (
+      {state?.isFetchingUsers || navigation.state === 'loading' ? (
         <Center h='100vh'>
           <Spinner size='xl' color={'purple.500'} />
         </Center>
-      ) : <>
-        <DrawerUserFavorites favorites={favorites}/>
-        <Box p={'28'}>
-          <SimpleGrid minChildWidth={'250px'} spacing={'20px'}>
-            {state?.users.map((user: IUser) => {
-              return (
-                <CardUser
-                  clickEvent={() => handleNavigate(user)}
-                  data={user}
-                  key={user.id}
-                />
-              )
-            })}
-          </SimpleGrid>
-        </Box>
-      </>}
+      ) : (
+        <>
+          <DrawerUserFavorites favorites={favorites} />
+          <Box p={'28'}>
+            <SimpleGrid minChildWidth={'250px'} spacing={'20px'}>
+              {state?.users.map((user: IUser) => {
+                return (
+                  <CardUser
+                    clickEvent={() => handleNavigate(user)}
+                    data={user}
+                    key={user.id}
+                  />
+                )
+              })}
+            </SimpleGrid>
+          </Box>
+        </>
+      )}
     </>
   )
 }

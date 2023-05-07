@@ -2,12 +2,16 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { createBrowserRouter, LoaderFunctionArgs, RouterProvider } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  LoaderFunctionArgs,
+  RouterProvider,
+} from 'react-router-dom'
 import { ChakraProvider } from '@chakra-ui/react'
 import { JsonPlaceholderClient } from './utils'
 
-const Users = React.lazy(() => import('./pages/users.page'));
-const UserDetails = React.lazy(() => import('./pages/user-details.page'));
+const Users = React.lazy(() => import('./pages/users.page'))
+const UserDetails = React.lazy(() => import('./pages/user-details.page'))
 
 const router = createBrowserRouter([
   {
@@ -18,8 +22,8 @@ const router = createBrowserRouter([
     path: '/:id',
     element: <UserDetails />,
     loader: async (req: LoaderFunctionArgs) => {
-      return await JsonPlaceholderClient.get(`/users/${req.params.id}`);
-    }
+      return await JsonPlaceholderClient.get(`/users/${req.params.id}`)
+    },
   },
 ])
 
